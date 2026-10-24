@@ -1131,13 +1131,17 @@ if (!deltaruneArchives[requestedChapter]) console.warn("Unknown Deltarune chapte
             const chapterExternalFiles = window.GM_CHAPTER_EXTERNAL_FILES || [];
 
             function resolveChapterAssetUrl(url) {
-                if (!chapterAssetPrefix || typeof url !== 'string') return url;
+                if (typeof url !== 'string') return url;
                 const queryIndex = url.search(/[?#]/);
                 const path = (queryIndex === -1 ? url : url.slice(0, queryIndex))
                     .replace(/^\.\//, '')
                     .replace(/^\//, '');
-                if (!chapterExternalFiles.includes(path)) return url;
                 const suffix = queryIndex === -1 ? '' : url.slice(queryIndex);
+                // The runner can lowercase music paths; hosting filenames are case-sensitive.
+                if (path.toLowerCase() === 'mus/flowerman_arrangement.ogg') {
+                    return `mus/Flowerman_Arrangement.ogg${suffix}`;
+                }
+                if (!chapterAssetPrefix || !chapterExternalFiles.includes(path)) return url;
                 return `${chapterAssetPrefix}/${path}${suffix}`;
             }
             
